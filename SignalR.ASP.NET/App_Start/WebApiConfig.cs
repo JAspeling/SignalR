@@ -17,6 +17,8 @@ namespace SignalR.ASP.NET
 
             config.Formatters.JsonFormatter.SupportedMediaTypes
                 .Add(new MediaTypeHeaderValue("text/html"));
+
+            config.Services.Add()
         }
     }
 }
