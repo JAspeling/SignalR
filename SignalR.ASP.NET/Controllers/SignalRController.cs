@@ -11,13 +11,13 @@ namespace SignalR.ASP.NET.Controllers
 {
     public class SignalRController : ApiController
     {
-        private readonly IHubContext<INotificationHub> _notificationHub;
+        //private readonly IHubContext<INotificationHub> _notificationHub;
 
-        public SignalRController(IHubContext<INotificationHub> notificationHub)
-        {
-            _notificationHub = notificationHub;
-        }
-        static IHubContext<INotificationHub> NotificationHubContext =>
+        //public SignalRController(IHubContext<INotificationHub> notificationHub)
+        //{
+        //    _notificationHub = notificationHub;
+        //}
+        static IHubContext<INotificationHub> NotificationHub =>
             GlobalHost.ConnectionManager.GetHubContext<NotificationHub, INotificationHub>();
 
         [HttpGet]
@@ -26,7 +26,7 @@ namespace SignalR.ASP.NET.Controllers
         {
             var method = MethodBase.GetCurrentMethod();
             var hubMessage = new HubMessage { Message = message, UserName = "Admin" };
-            _notificationHub.Clients.All.SendMessage(hubMessage);
+            NotificationHub.Clients.All.SendMessage(hubMessage);
 
             return $">> [SIGNALR] ({method}) - {JsonConvert.SerializeObject(hubMessage)}";
         }
