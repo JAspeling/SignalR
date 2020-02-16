@@ -112,9 +112,17 @@
   <ItemGroup>
     <Compile Include="Controllers\SignalRController.cs" />
     <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="DependencyResolution\HubActivator.cs" />
+    <Compile Include="DependencyResolution\HubRegistry.cs" />
+    <Compile Include="DependencyResolution\IoC.cs" />
+    <Compile Include="Modules\ErrorHandlingPipelineModule.cs" />
+    <Compile Include="Hubs\Interfaces\INotificationHub.cs" />
+    <Compile Include="Hubs\Models\NotificationHub\HubMessage.cs" />
+    <Compile Include="Modules\LoggingPipelineModule.cs" />
     <Compile Include="Hubs\NotificationHub.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Startup.SignalR.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

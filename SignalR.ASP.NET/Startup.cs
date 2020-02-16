@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Owin;
 
@@ -8,12 +9,11 @@ using Owin;
 
 namespace SignalR.ASP.NET
 {
-    public class Startup
+    public partial class Startup
     {
         public void Configuration(IAppBuilder app)
         {
-            // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=316888
-            app.MapSignalR();
+            ConfigureSignalR(app);
 
             var config = new HttpConfiguration();
             // Web API routes
