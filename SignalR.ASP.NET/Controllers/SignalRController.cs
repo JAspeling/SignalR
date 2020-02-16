@@ -7,11 +7,11 @@ namespace SignalR.ASP.NET.Controllers
     public class SignalRController : ApiController
     {
 
-        public SignalRController(IHubContext<NotificationHub> hubcontext)
-        {
+        //public SignalRController(IHubContext<NotificationHub> hubcontext)
+        //{
 
 
-        }
+        //}
 
         [HttpGet]
         [ActionName("NotifyAll")]
