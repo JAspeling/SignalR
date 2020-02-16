@@ -19,7 +19,7 @@ namespace SignalR.ASP.NET
             GlobalHost.HubPipeline.AddModule(new LoggingPipelineModule());
 
             IContainer container = IoC.Initialize();
-            
+
             container.AssertConfigurationIsValid();
 
             GlobalHost.DependencyResolver.Register(typeof(IHubActivator), () => new HubActivator(container));
