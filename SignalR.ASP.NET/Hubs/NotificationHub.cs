@@ -14,6 +14,7 @@ namespace SignalR.ASP.NET.Hubs
         {
             // Call the notify method on all connected clients.
             Clients.All.Notify(message);
+            Clients.All.SendMessage(new HubMessage());
         }
 
         public async Task SendMessage(string name, string message)
@@ -80,11 +81,6 @@ namespace SignalR.ASP.NET.Hubs
             string _message = message == "" ? "" : $" - {message}";
 
             Trace.WriteLine($">> SIGNALR - [${computerName} - ${userName}] ({callingFunction}){message}");
-        }
-
-        private void test()
-        {
-            dynamic hub = null;
         }
     }
 }

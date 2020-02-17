@@ -1,10 +1,7 @@
 ﻿using Microsoft.AspNet.SignalR;
-using Microsoft.AspNet.SignalR.Hubs;
 using Owin;
-using SignalR.ASP.NET.DependencyResolution;
 using SignalR.ASP.NET.Hubs.ErrorHandling;
 using SignalR.ASP.NET.Hubs.Modules;
-using StructureMap;
 
 namespace SignalR.ASP.NET
 {
@@ -18,11 +15,11 @@ namespace SignalR.ASP.NET
             GlobalHost.HubPipeline.AddModule(new ErrorHandlingPipelineModule());
             GlobalHost.HubPipeline.AddModule(new LoggingPipelineModule());
 
-            IContainer container = IoC.Initialize();
+            //IContainer container = IoC.Initialize();
+            //container.AssertConfigurationIsValid();
 
-            container.AssertConfigurationIsValid();
-
-            GlobalHost.DependencyResolver.Register(typeof(IHubActivator), () => new HubActivator(container));
+            
+            //GlobalHost.DependencyResolver.Register(typeof(IHubActivator), () => new HubActivator(container));
 
             //GlobalHost.DependencyResolver.Register(
             //    typeof(IHubContext<INotificationHub>),

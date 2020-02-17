@@ -1,9 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Web.Http;
-using Microsoft.AspNet.SignalR;
-using Microsoft.Owin;
+﻿using Microsoft.Owin;
 using Owin;
+using System.Web.Http;
 
 [assembly: OwinStartup(typeof(SignalR.ASP.NET.Startup))]
 
@@ -13,16 +10,11 @@ namespace SignalR.ASP.NET
     {
         public void Configuration(IAppBuilder app)
         {
-            ConfigureSignalR(app);
-
             var config = new HttpConfiguration();
-            // Web API routes
-            config.MapHttpAttributeRoutes();
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
+            config.Routes.MapHttpRoute("default", "api/{controller}/{id}", new { id = RouteParameter.Optional });
+
+            ConfigureNinject(config);
+            ConfigureSignalR(app);
 
             app.UseWebApi(config);
         }
