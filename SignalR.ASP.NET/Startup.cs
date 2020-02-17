@@ -16,6 +16,8 @@ namespace SignalR.ASP.NET
             ConfigureNinject(config);
             ConfigureSignalR(app);
 
+            
+
             app.UseWebApi(config);
         }
     }
