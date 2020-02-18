@@ -10,28 +10,9 @@ namespace SignalR.ASP.NET.Hubs
     public class NotificationHub : Hub<INotificationHub>
     {
         // The SendNotification method can be called from a client.
-        public void SendNotification(string message)
+        public async Task SendMessage(string message)
         {
-            // Call the notify method on all connected clients.
-            Clients.All.Notify(message);
-            Clients.All.SendMessage(new HubMessage());
-        }
-
-        public async Task SendMessage(string name, string message)
-        {
-            if (message.Contains("<script>"))
-            {
-                throw new HubException("This message will flow to the client",
-                    new { user = Context.User.Identity.Name, message = message });
-            }
-
-            await Clients.All.SendMessage(new HubMessage() { UserName = name, Message = message });
-        }
-
-        public async Task NewMessage(string name, string message, string notification)
-        {
-            await Clients.Others.SendMessage(new HubMessage() { UserName = name, Message = message });
-            await Clients.Caller.Notify(notification);
+            await Clients.All.SendMessage(new HubMessage() {UserName = Context.User.Identity.Name, Message = message});
         }
 
         public Task JoinGroup(string groupName)
@@ -53,6 +34,8 @@ namespace SignalR.ASP.NET.Hubs
             // After the code in this method completes, the client is informed that
             // the connection is established; for example, in a JavaScript client,
             // the start().done callback is executed.
+
+            Clients.All.Notify($"{Context.ConnectionId} Connected");
             return base.OnConnected();
         }
 
@@ -61,6 +44,8 @@ namespace SignalR.ASP.NET.Hubs
             // Add your own code here.
             // For example: in a chat application, mark the user as offline, 
             // delete the association between the current connection id and user name.
+
+            Clients.All.Notify($"{Context.ConnectionId} Disconnected");
             return base.OnDisconnected(stopCalled);
         }
 
@@ -70,6 +55,8 @@ namespace SignalR.ASP.NET.Hubs
             // For example: in a chat application, you might have marked the
             // user as offline after a period of inactivity; in that case 
             // mark the user as online again.
+
+            Clients.All.Notify($"{Context.ConnectionId} Reconnected");
             return base.OnReconnected();
         }
 

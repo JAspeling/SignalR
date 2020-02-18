@@ -4,30 +4,47 @@ import { ISignalRConnection, SignalR } from 'ng2-signalr';
 import { environment } from '../../environments/environment';
 import { NotificationHub } from '../hubs/notification-hub';
 import { INotificationHub } from '../interfaces/notification-hub.interface';
-import { Dictionary } from '../interfaces/dictionary';
+import { FeedbackService } from './feedback-service';
+import { isNullOrUndefined } from 'util';
+import { IHub } from '../hubs/hub';
 
 @Injectable()
 export class SignalRService {
-    public connections: Dictionary<ISignalRConnection> = {};
+    private _notificationHub: INotificationHub;
+    public get notificationHub(): INotificationHub {
+        this.assertHub(this._notificationHub);
+        return this._notificationHub;
+    };
 
-    public notificationHub = (connection?: ISignalRConnection): INotificationHub => NotificationHub.getInstance(connection);
-
-    constructor(private readonly signalR: SignalR) {
+    constructor(private readonly signalR: SignalR,
+        private readonly feedbackService: FeedbackService) {
     }
 
     connect(hub: string): Promise<ISignalRConnection> {
         return new Promise<ISignalRConnection>((resolve, reject) => {
             this.signalR.connect({ hubName: hub, url: environment.signalrUrl, jsonp: true })
                 .then((connection: ISignalRConnection) => {
-                    this.connections[hub] = connection;
-                    console.log(`[SignalR] Connection to hub ${hub} started`);
+                    this.feedbackService.log(`Connection to ${hub} success`);
+                    this.instantiateHub(hub, connection);
                     resolve(connection);
                 })
                 .catch((error) => {
-                    console.error(`[SignalR] Failed to connect to SignalR hub ${hub}`, error);
+                    this.feedbackService.log(`Failed to connect to SignalR hub ${hub}`);
                     reject(error);
                 });
 
         });
+    }
+
+    private instantiateHub(hub: string, connection: ISignalRConnection): void {
+        switch (hub) {
+            case INotificationHub.hub: this._notificationHub = new NotificationHub(connection); break;
+        }
+    }
+
+    private assertHub(hub: IHub): void {
+        if (isNullOrUndefined(hub)) {
+            throw new Error(`${IHub.hub} isn't connected yet. Call signalRService.connect(${IHub.hub});`);
+        }
     }
 }

@@ -1,9 +1,10 @@
-import { NgModule } from '@angular/core';
+import { Injector, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-import { SignalRModule } from './signalR.module';
 import { ComponentsModule } from './components/components/components.module';
+import { AppInjector } from './services/app-injector';
+import { SignalRModule } from './signalR.module';
 
 @NgModule({
     declarations: [
@@ -19,4 +20,9 @@ import { ComponentsModule } from './components/components/components.module';
     ],
     bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule { 
+    constructor(injector: Injector) {
+        // Store module's injector in the AppInjector class
+        AppInjector.setInjector(injector);
+    }
+}

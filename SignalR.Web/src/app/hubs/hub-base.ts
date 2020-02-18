@@ -7,7 +7,8 @@ export class HubBase {
     // These need to match the methods on the server
     serverMethods = {
         NotificationHub: {
-            SendNotification: 'SendNotification'
+            SendMessage: 'SendMessage',
+            Notify: 'Notify'
         }
     };
 
