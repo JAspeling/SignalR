@@ -9,6 +9,7 @@ export abstract class INotificationHub implements IHub {
     public connection: ISignalRConnection;
 
     abstract registerSendMessage(): Observable<NotificationHubMessage>;
+    abstract registerNotify(): Observable<string>;
 
     abstract sendMessage(message: string): Promise<void>;
 }

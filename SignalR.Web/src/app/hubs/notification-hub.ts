@@ -1,18 +1,17 @@
 import { BroadcastEventListener, ISignalRConnection } from 'ng2-signalr';
 import { Observable } from 'rxjs';
-import { isNullOrUndefined } from 'util';
 
 import { INotificationHub } from '../interfaces/notification-hub.interface';
 import { NotificationHubMessage } from '../models/notification-hub-message';
-import { HubBase } from './hub-base';
-import { FeedbackService } from '../services/feedback-service';
 import { AppInjector } from '../services/app-injector';
+import { FeedbackService } from '../services/feedback-service';
+import { HubBase } from './hub-base';
 
 export class NotificationHub extends HubBase implements INotificationHub {
     public constructor(public connection: ISignalRConnection) {
         super(connection);
 
-        if (!this.assertConnection) {
+        if (!this.assertConnection()) {
             console.warn('NotificationHub will not work, as the connection to SignalR server has not been established yet.');
         }
         this.feedbackService = AppInjector.getInstance(FeedbackService);
@@ -22,10 +21,19 @@ export class NotificationHub extends HubBase implements INotificationHub {
 
     // Listen to when the server broadcasts 'SendNotification' on the NotificationHub
     public registerSendMessage(): Observable<NotificationHubMessage> {
-        if (!this.assertConnection) { return; }
-        this.log(`Subscribing to ${this.serverMethods.NotificationHub.SendMessage}`);
+        return this.register<NotificationHubMessage>(this.serverMethods.NotificationHub.SendMessage);
+    }
 
-        const listener$ = new BroadcastEventListener<NotificationHubMessage>(this.serverMethods.NotificationHub.SendMessage);
+    public registerNotify(): Observable<string> {
+        return this.register<string>(this.serverMethods.NotificationHub.Notify);
+    }
+
+    private register<T>(method: string): Observable<T> {
+        if (!this.assertConnection()) { return; }
+
+        this.log(`Subscribing to ${method}`);
+
+        const listener$ = new BroadcastEventListener<T>(method);
         this.connection.listen(listener$);
 
         return listener$;

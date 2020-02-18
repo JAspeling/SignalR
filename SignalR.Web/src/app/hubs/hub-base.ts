@@ -8,7 +8,7 @@ export class HubBase {
     serverMethods = {
         NotificationHub: {
             SendMessage: 'SendMessage',
-            Notify: 'Notify'
+            Notify: 'Notify',
         }
     };
 

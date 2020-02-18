@@ -22,7 +22,17 @@ export class AppComponent implements OnInit {
         console.log(`subscribing to ${INotificationHub.hub}`);
         this.connectToHub(INotificationHub.hub).then(() => {
             this.subscribeToSendMessage();
+            this.subscribeToNotify();
         });
+    }
+    
+    private subscribeToNotify() {
+        this.signalrService.notificationHub.registerNotify()
+            .subscribe({
+                next: (message: string) => { this.log(`${message}`); },
+                error: (error) => { this.log(`Notify failed`); },
+                complete: () => { },
+            });
     }
 
 
@@ -33,13 +43,10 @@ export class AppComponent implements OnInit {
 
     private subscribeToSendMessage(): void {
         this.signalrService.notificationHub.registerSendMessage()
-            .subscribe((message: NotificationHubMessage) => {
-                try {
-                    this.log(`[${message.userName || 'Anonymous'}] ${message.message}`);
-                } catch (error) {
-                    this.log('ERROR: Failed to display the SignalR notification');
-                    console.error('Failed to display the SignalR notification', error);
-                }
+            .subscribe({
+                next: (message: NotificationHubMessage) => { this.log(`[${message.userName || 'Anonymous'}] ${message.message}`); },
+                error: (error) => { this.log(`SendMessage failed`); },
+                complete: () => { },
             });
     }
 
