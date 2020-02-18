@@ -18,8 +18,9 @@ export class NotificationHub extends HubBase implements INotificationHub {
 
     public static instance: NotificationHub;
 
-    public static getInstance(connection: ISignalRConnection): NotificationHub {
+    public static getInstance(connection?: ISignalRConnection): NotificationHub {
         if (isNullOrUndefined(NotificationHub.instance)) {
+            if (isNullOrUndefined(connection)) throw new Error(`Cannot create a new instance of ${INotificationHub.hub} without a SignalR connection`);
             NotificationHub.instance = new NotificationHub(connection);
         }
 

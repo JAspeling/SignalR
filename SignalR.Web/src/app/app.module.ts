@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
 import { SignalRModule } from './signalR.module';
+import { ComponentsModule } from './components/components/components.module';
 
 @NgModule({
     declarations: [
@@ -10,6 +11,7 @@ import { SignalRModule } from './signalR.module';
     ],
     imports: [
         BrowserModule,
+        ComponentsModule,
         SignalRModule.forRoot()
     ],
     providers: [

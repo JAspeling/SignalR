@@ -1,3 +1,77 @@
 {
+    "git.autofetch": true,
+    "tslint.alwaysShowRuleFailuresAsWarnings": true,
+    "javascript.implicitProjectConfig.experimentalDecorators": true,
+    "workbench.editor.highlightModifiedTabs": true,
+    "files.trimFinalNewlines": true,
+    "prettier.bracketSpacing": false,
+    "editor.wordWrapColumn": 200,
+    "editor.detectIndentation": false,
+    "editor.formatOnPaste": true,
+    "html.format.wrapLineLength": 200,
+    "html.format.wrapAttributes": "force",
+    "prettier.useTabs": false,
+    "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": false,
+    "diffEditor.ignoreTrimWhitespace": true,
+    "editor.wordSeparators": "`~!@#%^&*()-=+[{]}\\|;:'\",.<>/?",
+    "[json]": {
+        "editor.defaultFormatter": "remimarsal.prettier-now"
+    },
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
+    },
+    "prettier.printWidth": 200,
+    "prettier.arrayExpand": true,
+    "cSpell.words": [
+        "Behaviour",
+        "Brid",
+        "Collateralised",
+        "Collateralized",
+        "Corporates",
+        "Counterparties",
+        "Counterparty",
+        "Customisable",
+        "Customisation",
+        "Customisations",
+        "Customised",
+        "FOREIGNDG",
+        "Handson",
+        "Highcharts",
+        "IBANK",
+        "LOCALDG",
+        "Preferance",
+        "RACC",
+        "Recurrance",
+        "Rorc",
+        "Rorwa",
+        "STCF",
+        "USDLIBOR",
+        "USERCULTURE",
+        "Whitespaces",
+        "ZARJIBAR",
+        "annualised",
+        "customise",
+        "darkred",
+        "doesnt",
+        "dropdown",
+        "hqla",
+        "lrlgd",
+        "oidc",
+        "sdsid",
+        "solidgauge",
+        "standardised",
+        "utilisation",
+        "viewmodel"
+    ],
+    "files.exclude": {
+        "documentation/**/*": true,
+    },
+    "workbench.colorCustomizations": {
+        "activityBar.activeBackground": "#01BAE8",
+        "window.activeBorder": "#9801E8"
+    },
     "explorer.compactFolders": false
 }

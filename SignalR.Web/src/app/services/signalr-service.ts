@@ -10,14 +10,14 @@ import { Dictionary } from '../interfaces/dictionary';
 export class SignalRService {
     public connections: Dictionary<ISignalRConnection> = {};
 
-    notificationHub = (connection: ISignalRConnection): INotificationHub => NotificationHub.getInstance(connection);
+    public notificationHub = (connection?: ISignalRConnection): INotificationHub => NotificationHub.getInstance(connection);
 
     constructor(private readonly signalR: SignalR) {
     }
 
     connect(hub: string): Promise<ISignalRConnection> {
         return new Promise<ISignalRConnection>((resolve, reject) => {
-            this.signalR.connect({ hubName: hub, url: environment.signalrUrl })
+            this.signalR.connect({ hubName: hub, url: environment.signalrUrl, jsonp: true })
                 .then((connection: ISignalRConnection) => {
                     this.connections[hub] = connection;
                     console.log(`[SignalR] Connection to hub ${hub} started`);

@@ -1,5 +1,6 @@
 ﻿using System.Web.Routing;
 using Microsoft.AspNet.SignalR;
+using Microsoft.Owin.Cors;
 using Owin;
 using SignalR.ASP.NET.Hubs.ErrorHandling;
 using SignalR.ASP.NET.Hubs.Modules;
