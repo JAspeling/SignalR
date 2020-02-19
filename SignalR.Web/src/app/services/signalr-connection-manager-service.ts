@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { ConnectionStatus, ISignalRConnection } from 'ng2-signalr';
 import { Subject } from 'rxjs';
-import { isNullOrUndefined } from 'util';
 
 import { LoggingService } from './feedback-service';
 import { SignalRService } from './signalr-service';
@@ -16,7 +15,8 @@ export class SignalRConnectionManager {
 
     /**
      * Connects to the specified hub and returns a connection when the connection is successful.
-     * When a connection 
+     * Handles reconnection when a connection to SignalR is lost. Will continue retrying indefinitely 
+     * until a connection is re-established.
      * @param hub 
      */
     public connect(hub: string): Subject<ISignalRConnection> {

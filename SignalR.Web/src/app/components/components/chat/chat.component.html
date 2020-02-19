@@ -1,0 +1,14 @@
+<div class="message-container">
+    <div *ngFor="let message of messages"
+        class="message"
+        [class.mine]="message.mine">
+        <span>{{message.message}}</span></div>
+</div>
+
+<div class="commands">
+    <input class="form-control"
+        type="text"
+        placeholder="Enter message here">
+    <button type="button"
+        class="btn btn-primary">Send</button>
+</div>

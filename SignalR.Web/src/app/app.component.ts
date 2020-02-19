@@ -12,8 +12,6 @@ import { SignalRConnectionManager } from './services/signalr-connection-manager-
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-    title = 'signalr-web';
-
     constructor(public readonly signalrService: SignalRService,
         private readonly logger: LoggingService,
         private readonly signalRManager: SignalRConnectionManager) {
@@ -26,7 +24,7 @@ export class AppComponent implements OnInit {
         this.signalRManager.connect(INotificationHub.hub).subscribe(() => {
             this.subscribeToSendMessage();
             this.subscribeToNotify();
-        })
+        });
     }
     
     private subscribeToNotify() {
