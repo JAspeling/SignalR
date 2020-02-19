@@ -27,9 +27,9 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        if (this.signalrService.notificationHub) {
-            this.signalrService.notificationHub.connection.stop();
-        }
+        // if (this.signalrService.notificationHub) {            
+        //     this.signalrService.notificationHub.connection.stop(); 
+        // }
     }
 
     private subscribeToNotify() {

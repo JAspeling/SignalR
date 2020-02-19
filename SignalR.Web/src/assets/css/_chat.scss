@@ -51,5 +51,21 @@
                 margin: 5px 0 5px 5px;
             }
         }
+
+        .groups {
+            height: 50px;
+            width: 600px;
+
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            align-self: center;
+
+            .btn {
+                min-width: 100px;
+                margin: 5px 0 5px 5px;
+            }
+        }
     }
 }

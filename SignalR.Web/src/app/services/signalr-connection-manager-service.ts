@@ -55,7 +55,7 @@ export class SignalRConnectionManager {
                 this.logger.log(`Connection to ${hub} failed, retrying`)
 
                 // Retry the connection.
-                return new Promise(resolve => setTimeout(() => resolve(this.connectRetryIndefinitely(hub)), 5000));
+                return Promise.resolve(resolve => setTimeout(() => resolve(this.connectRetryIndefinitely(hub)), 5000));
             })
     }
 
