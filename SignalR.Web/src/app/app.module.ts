@@ -5,6 +5,7 @@ import { AppComponent } from './app.component';
 import { ComponentsModule } from './components/components/components.module';
 import { AppInjector } from './services/app-injector';
 import { SignalRModule } from './signalR.module';
+import { NameService } from './services/name-service';
 
 @NgModule({
     declarations: [
@@ -16,7 +17,7 @@ import { SignalRModule } from './signalR.module';
         SignalRModule.forRoot()
     ],
     providers: [
-        
+        NameService
     ],
     bootstrap: [AppComponent]
 })

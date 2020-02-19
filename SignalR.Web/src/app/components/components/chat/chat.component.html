@@ -1,14 +1,20 @@
 <div class="message-container">
+    <div class="message info" *ngIf="currentUser"><span>-- Connected as <b>{{currentUser}} --</b></span></div>
     <div *ngFor="let message of messages"
         class="message"
-        [class.mine]="message.mine">
+        [class.mine]="message.mine"
+        [class.info]="message.info">
+        <b *ngIf="message.user"><span>{{message.user}}: </span></b>
         <span>{{message.message}}</span></div>
 </div>
 
 <div class="commands">
     <input class="form-control"
         type="text"
-        placeholder="Enter message here">
+        placeholder="Enter message here"
+        (keyup.enter)="sendMessage()"
+        [(ngModel)]="message">
     <button type="button"
-        class="btn btn-primary">Send</button>
+        class="btn btn-primary"
+        (click)="sendMessage()">Send</button>
 </div>

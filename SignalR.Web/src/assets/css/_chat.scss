@@ -27,6 +27,12 @@
                     &.mine {
                         align-self: flex-end;
                     }
+
+                    &.info {
+                        align-self: center;
+                        font-style: italic;
+                        border: none;
+                    }
                 }
             }
         }

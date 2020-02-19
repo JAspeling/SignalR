@@ -19,7 +19,7 @@ export class SignalRConnectionManager {
      * until a connection is re-established.
      * @param hub 
      */
-    public connect(hub: string): Subject<ISignalRConnection> {
+    public connect(hub: string, options?: any): Subject<ISignalRConnection> {
         this.connectRetryIndefinitely(hub);
         return this.connectionEstablished$;
     }

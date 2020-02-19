@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { NotificationHubMessage } from '../models/notification-hub-message';
 import { ISignalRConnection } from 'ng2-signalr';
