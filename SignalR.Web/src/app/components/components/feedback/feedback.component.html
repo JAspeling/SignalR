@@ -1,4 +1,5 @@
-<div class="feedback-container">
+<div id="feedback"
+    class="feedback-container">
     <div class="event"
         *ngFor="let event of events">
         <span>{{event.timestamp | date:'HH:mm:ss'}}</span> : <span>{{event.message}}</span>

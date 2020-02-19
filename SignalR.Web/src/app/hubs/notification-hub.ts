@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { INotificationHub } from '../interfaces/notification-hub.interface';
 import { NotificationHubMessage } from '../models/notification-hub-message';
 import { AppInjector } from '../services/app-injector';
-import { FeedbackService } from '../services/feedback-service';
+import { LoggingService } from '../services/feedback-service';
 import { HubBase } from './hub-base';
 
 export class NotificationHub extends HubBase implements INotificationHub {
@@ -14,10 +14,10 @@ export class NotificationHub extends HubBase implements INotificationHub {
         if (!this.assertConnection()) {
             console.warn('NotificationHub will not work, as the connection to SignalR server has not been established yet.');
         }
-        this.feedbackService = AppInjector.getInstance(FeedbackService);
+        this.feedbackService = AppInjector.getInstance(LoggingService);
     }
 
-    feedbackService: FeedbackService;
+    feedbackService: LoggingService;
 
     // Listen to when the server broadcasts 'SendNotification' on the NotificationHub
     public registerSendMessage(): Observable<NotificationHubMessage> {

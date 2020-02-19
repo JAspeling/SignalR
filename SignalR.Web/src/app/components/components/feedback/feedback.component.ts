@@ -4,7 +4,9 @@ import { HubEvent } from '../../../models/event';
 import { SignalRService } from '../../../services/signalr-service';
 import { NotificationHubMessage } from '../../../models/notification-hub-message';
 import { Subscription, Subject } from 'rxjs';
-import { FeedbackService } from '../../../services/feedback-service';
+import { LoggingService } from '../../../services/feedback-service';
+
+// declare const $: any;
 
 @Component({
     selector: 'app-feedback',
@@ -14,31 +16,31 @@ export class FeedbackComponent implements OnInit, OnDestroy {
 
     events: HubEvent[] = [];
     subs: Subscription[] = [];
+    scrolled = false;
 
     constructor(private readonly signalR: SignalRService,
-        private readonly feedbackService: FeedbackService) {
-        feedbackService.event$.subscribe(data => {
+        private readonly logger: LoggingService) {
+        logger.event$.subscribe(data => {
             this.events.push(data);
         });
-        console.log('Feedback component ctor');
     }
 
     ngOnInit() {
+        const out = document.getElementById("feedback")
 
-        // this.monitorNotificationHubSendMessage();
+        // setInterval(function () {
+        //     // allow 1px inaccuracy by adding 1
+        //     const isScrolledToBottom = out.scrollHeight - out.clientHeight <= out.scrollTop + 10;
 
-        //this.signalR.notificationHub().connection.invoke('SendMessage', 'Johan Aspeling', 'fired from ngOnInit!');
+        //     // scroll to bottom if isScrolledToBottom is true
+        //     if (isScrolledToBottom) {
+        //         out.scrollTop = out.scrollHeight - out.clientHeight
+        //     }
+        // }, 500)
     }
 
     ngOnDestroy(): void {
         this.subs.forEach(sub => sub.unsubscribe());
     }
 
-    private monitorNotificationHubSendMessage() {
-        this.subs.push(
-            this.signalR.notificationHub().registerSendMessage().subscribe((message: NotificationHubMessage) => {
-                this.feedbackService.log(`[${message.userName}] message.message`);
-            })
-        );
-    }
 }

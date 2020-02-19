@@ -35,7 +35,7 @@ namespace SignalR.ASP.NET.Hubs
             // the connection is established; for example, in a JavaScript client,
             // the start().done callback is executed.
 
-            Clients.All.Notify($"{Context.ConnectionId} Connected").Wait();
+            Clients.All.Notify($"{Context.ConnectionId} Connected");
             return base.OnConnected();
         }
 
@@ -45,7 +45,7 @@ namespace SignalR.ASP.NET.Hubs
             // For example: in a chat application, mark the user as offline, 
             // delete the association between the current connection id and user name.
 
-            Clients.All.Notify($"{Context.ConnectionId} Disconnected").Wait();
+            Clients.All.Notify($"{Context.ConnectionId} Disconnected");
             return base.OnDisconnected(stopCalled);
         }
 
@@ -56,7 +56,7 @@ namespace SignalR.ASP.NET.Hubs
             // user as offline after a period of inactivity; in that case 
             // mark the user as online again.
 
-            Clients.All.Notify($"{Context.ConnectionId} Reconnected").Wait();
+            Clients.All.Notify($"{Context.ConnectionId} Reconnected");
             return base.OnReconnected();
         }
 
@@ -67,7 +67,7 @@ namespace SignalR.ASP.NET.Hubs
 
             string _message = message == "" ? "" : $" - {message}";
 
-            Trace.WriteLine($">> SIGNALR - [${computerName} - ${userName}] ({callingFunction}){message}");
+            Trace.WriteLine($">> SIGNALR - [${computerName} - ${userName}] ({callingFunction}){_message}");
         }
     }
 }

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
+
 import { HubEvent } from '../models/event';
-import { Subject, BehaviorSubject } from 'rxjs';
 
 @Injectable()
-export class FeedbackService {
+export class LoggingService {
     event$: Subject<HubEvent> = new Subject();
 
     public log(message: string) {

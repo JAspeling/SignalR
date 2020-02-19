@@ -17,13 +17,12 @@ export class AppInjector {
         return AppInjector.injector;
     }
 
-    static getInstance<T>(instance: unknown): T {
+    static getInstance<T>(instance: any): T {
         const result: T = this.getInjector().get<T>(instance as Type<T>);
         if (isNullOrUndefined(result)) {
             const constructorName: string = `${instance.constructor.name}`;
-            const classInformationName: string = instance['classInformation'] ? instance['classInformation'].name : undefined;
 
-            throw new Error(`Failed to retrieve an instance of ${classInformationName ? classInformationName : constructorName} from the AppInjector.`);
+            throw new Error(`Failed to retrieve an instance of ${constructorName} from the AppInjector.`);
         }
         return result;
     }

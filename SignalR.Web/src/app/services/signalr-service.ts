@@ -4,7 +4,7 @@ import { ISignalRConnection, SignalR } from 'ng2-signalr';
 import { environment } from '../../environments/environment';
 import { NotificationHub } from '../hubs/notification-hub';
 import { INotificationHub } from '../interfaces/notification-hub.interface';
-import { FeedbackService } from './feedback-service';
+import { LoggingService } from './feedback-service';
 import { isNullOrUndefined } from 'util';
 import { IHub } from '../hubs/hub';
 
@@ -17,7 +17,7 @@ export class SignalRService {
     };
 
     constructor(private readonly signalR: SignalR,
-        private readonly feedbackService: FeedbackService) {
+        private readonly feedbackService: LoggingService) {
     }
 
     connect(hub: string): Promise<ISignalRConnection> {
