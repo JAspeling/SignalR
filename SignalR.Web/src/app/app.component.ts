@@ -1,10 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { SignalRService } from './services/signalr-service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+
 import { INotificationHub } from './interfaces/notification-hub.interface';
-import { ISignalRConnection } from 'ng2-signalr';
 import { NotificationHubMessage } from './models/notification-hub-message';
 import { LoggingService } from './services/feedback-service';
 import { SignalRConnectionManager } from './services/signalr-connection-manager-service';
+import { SignalRService } from './services/signalr-service';
+import { NameService } from './services/name-service';
 
 @Component({
     selector: 'app-root',
@@ -14,10 +15,11 @@ import { SignalRConnectionManager } from './services/signalr-connection-manager-
 export class AppComponent implements OnInit, OnDestroy {
     constructor(public readonly signalrService: SignalRService,
         private readonly logger: LoggingService,
-        private readonly signalRManager: SignalRConnectionManager) {
+        private readonly signalRManager: SignalRConnectionManager,
+        private readonly nameService: NameService) {
 
         console.log(`subscribing to ${INotificationHub.hub}`);
-        this.signalRManager.connect(INotificationHub.hub).subscribe((hub: INotificationHub) => {
+        this.signalRManager.connect(INotificationHub.hub, { name: this.nameService.name}).subscribe((hub: INotificationHub) => {
             this.subscribeToSendMessage(hub);
             this.subscribeToNotify(hub);
         });

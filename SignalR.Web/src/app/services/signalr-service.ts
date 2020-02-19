@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { ISignalRConnection, SignalR } from 'ng2-signalr';
-import { Subject, BehaviorSubject, Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { share } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
+import { IHub } from '../hubs/hub';
 import { NotificationHub } from '../hubs/notification-hub';
 import { INotificationHub } from '../interfaces/notification-hub.interface';
 import { LoggingService } from './feedback-service';
 import { NameService } from './name-service';
-import { share } from 'rxjs/operators';
-import { IHub } from '../hubs/hub';
 
 @Injectable()
 export class SignalRService {
@@ -25,7 +25,7 @@ export class SignalRService {
 
     connect(hub: string, options?: any): Promise<IHub> {
         return new Promise<IHub>((resolve, reject) => {
-            this.signalR.connect({ hubName: hub, url: environment.signalrUrl, jsonp: true, qs: { name: this.nameService.name } })
+            this.signalR.connect({ hubName: hub, url: environment.signalrUrl, jsonp: true, qs: options })
                 .then((connection: ISignalRConnection) => {
                     this.feedbackService.log(`Connection to ${hub} success`);
                     resolve(this.instantiateHub(hub, connection));
@@ -34,7 +34,6 @@ export class SignalRService {
                     this.feedbackService.log(`Failed to connect to SignalR hub ${hub}`);
                     reject(error);
                 });
-
         });
     }
 
