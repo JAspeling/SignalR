@@ -1,50 +1,39 @@
 import { Injectable } from '@angular/core';
-import { ISignalRConnection, ConnectionStatus } from 'ng2-signalr';
+import { ConnectionStatus, ISignalRConnection } from 'ng2-signalr';
+import { Subject } from 'rxjs';
+import { isNullOrUndefined } from 'util';
 
 import { LoggingService } from './feedback-service';
 import { SignalRService } from './signalr-service';
-import { isNullOrUndefined } from 'util';
-import { Observable, from, of } from 'rxjs';
-import { catchError, finalize, tap, delay } from 'rxjs/operators'
 
 @Injectable()
 export class SignalRConnectionManager {
-    private _retries: number = null;
-    private set retryAmount(retries: number) {
-        // Can only be set once, or set to null.
-        if (isNullOrUndefined(this._retries) || isNullOrUndefined(retries)) {
-            this._retries = retries;
-        }
-    }
-
-    private get retryAmount(): number {
-        return this._retries;
-    }
+    connectionEstablished$: Subject<ISignalRConnection> = new Subject<ISignalRConnection>();
 
     constructor(private readonly signalR: SignalRService, private logger: LoggingService) {
 
     }
 
-    pollForAvailability(connection: ISignalRConnection, hub: string): void {
-        this.connectRetryIndefinitely(hub)
+    /**
+     * Connects to the specified hub and returns a connection when the connection is successful.
+     * When a connection 
+     * @param hub 
+     */
+    public connect(hub: string): Subject<ISignalRConnection> {
+        this.connectRetryIndefinitely(hub);
+        return this.connectionEstablished$;
     }
 
-    monitorServerConnection(connection: ISignalRConnection, hub: string): void {
-        this.logger.log(`Subscribing to server status on ${connection.id}`);
+    private monitorServerConnection(connection: ISignalRConnection, hub: string): void {
+        this.logger.log(`Subscribing to server status on ${connection.id} to monitor connection loss.`);
         connection.status.subscribe({
             next: (status: ConnectionStatus) => {
-                this.logger.log(`[next] status: ${status.name}`, status);
+                this.logger.log(`SignalR connection status: ${status.name}`, status);
 
                 // Disconnected
                 if (status.value === 4) {
-                    this.pollForAvailability(connection, hub);
+                    this.connectRetryIndefinitely(hub);
                 }
-            },
-            error: (error) => {
-                this.logger.log(`[error] status: ${error}`, error);
-            },
-            complete: () => {
-                this.logger.log(`[complete] closed: ${closed}`);
             }
         })
     }
@@ -52,15 +41,14 @@ export class SignalRConnectionManager {
     // Should only be called when a connection has already been established - Server restart, appPool recycle, etc. 
     // Connection has made to the server at least once, so we know its not a 'bad' connection, and should 
     // be able to reconnect.
-    private connectRetryIndefinitely(hub: string): Promise<ISignalRConnection> {
-
-        return this.connect(hub)
+    private connectRetryIndefinitely(hub: string): void {
+        this.signalR.connect(hub)
             .then((connection: ISignalRConnection) => {
                 this.logger.log(`${connection.id} connected!`)
-                this.retryAmount = null;
                 this.monitorServerConnection(connection, hub);
 
                 // Connection established successfully
+                this.connectionEstablished$.next(connection);
                 return Promise.resolve(connection);
             })
             .catch((err) => {
@@ -69,40 +57,6 @@ export class SignalRConnectionManager {
                 // Retry the connection.
                 return new Promise(resolve => setTimeout(() => resolve(this.connectRetryIndefinitely(hub)), 5000));
             })
-    }
-
-    connectWithRetry(hub: string, retries: number = 5): Promise<ISignalRConnection> {
-        this.retryAmount = retries
-
-        if (retries >= 0) {
-            return this.connect(hub).then((connection: ISignalRConnection) => {
-                this.logger.log(`${connection.id} connected!`);
-                this.retryAmount = null;
-                this.monitorServerConnection(connection, hub);
-
-                return Promise.resolve(connection);
-            }).catch((error) => {
-                this.logger.log(`Connection to ${hub} failed, ${retries} retries remaining`);
-
-                return new Promise<ISignalRConnection>(resolve => setTimeout(() => resolve(this.connectWithRetry(hub, --retries)), 5000));
-            })
-        } else {
-            // Fail the connection attempt
-            const err: string = `Failed to connect to ${hub} ${this.retryAmount} times, aborting connection attempts.`;
-            this.logger.log(err)
-            this.retryAmount = null;
-
-            throw new Error(err);
-        }
-    }
-
-    connect(hub: string): Promise<ISignalRConnection> {
-        return this.connectToHub(hub);
-    }
-
-    private connectToHub(hub: string): Promise<ISignalRConnection> {
-        this.log(`Connecting to ${hub}...`);
-        return this.signalR.connect(hub);
     }
 
     public log(message: string) {

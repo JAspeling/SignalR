@@ -22,12 +22,11 @@ export class AppComponent implements OnInit {
 
     public ngOnInit(): void {
         console.log(`subscribing to ${INotificationHub.hub}`);
-        this.signalRManager.connectWithRetry(INotificationHub.hub).then(() => {
+
+        this.signalRManager.connect(INotificationHub.hub).subscribe(() => {
             this.subscribeToSendMessage();
             this.subscribeToNotify();
-        }).catch((err) => {
-            console.error('Aborting', err);
-        });
+        })
     }
     
     private subscribeToNotify() {
