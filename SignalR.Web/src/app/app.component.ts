@@ -26,7 +26,7 @@ export class AppComponent implements OnInit {
             this.subscribeToSendMessage();
             this.subscribeToNotify();
         }).catch((err) => {
-            console.error('Aborting', err)
+            console.error('Aborting', err);
         });
     }
     

@@ -7,8 +7,8 @@ import { HubEvent } from '../models/event';
 export class LoggingService {
     event$: Subject<HubEvent> = new Subject();
 
-    public log(message: string) {
-        console.log(`[Feedback] = ${message}`);
+    public log(message: string, ...params: any[]) {
+        console.log(`[Feedback] = ${message}`, params);
         this.event$.next(new HubEvent({ message: message }));
     }
 }
