@@ -4,10 +4,11 @@ import { Subject } from 'rxjs';
 
 import { LoggingService } from './feedback-service';
 import { SignalRService } from './signalr-service';
+import { IHub } from '../hubs/hub';
 
 @Injectable()
 export class SignalRConnectionManager {
-    connectionEstablished$: Subject<ISignalRConnection> = new Subject<ISignalRConnection>();
+    connectionEstablished$: Subject<IHub> = new Subject<IHub>();
 
     constructor(private readonly signalR: SignalRService, private logger: LoggingService) {
 
@@ -19,7 +20,7 @@ export class SignalRConnectionManager {
      * until a connection is re-established.
      * @param hub 
      */
-    public connect(hub: string, options?: any): Subject<ISignalRConnection> {
+    public connect(hub: string, options?: any): Subject<IHub> {
         this.connectRetryIndefinitely(hub);
         return this.connectionEstablished$;
     }
@@ -41,21 +42,20 @@ export class SignalRConnectionManager {
     // Should only be called when a connection has already been established - Server restart, appPool recycle, etc. 
     // Connection has made to the server at least once, so we know its not a 'bad' connection, and should 
     // be able to reconnect.
-    private connectRetryIndefinitely(hub: string): void {
-        this.signalR.connect(hub)
-            .then((connection: ISignalRConnection) => {
-                this.logger.log(`${connection.id} connected!`)
-                this.monitorServerConnection(connection, hub);
+    private connectRetryIndefinitely(hubName: string): void {
+        this.signalR.connect(hubName)
+            .then((hub: IHub) => {
+                this.logger.log(`${hub.connection.id} connected!`)
+                this.monitorServerConnection(hub.connection, hubName);
 
                 // Connection established successfully
-                this.connectionEstablished$.next(connection);
-                return Promise.resolve(connection);
+                this.connectionEstablished$.next(hub);
             })
             .catch((err) => {
-                this.logger.log(`Connection to ${hub} failed, retrying`)
+                this.logger.log(`Connection to ${hubName} failed, retrying`)
 
                 // Retry the connection.
-                return Promise.resolve(resolve => setTimeout(() => resolve(this.connectRetryIndefinitely(hub)), 5000));
+                setTimeout(() => this.connectRetryIndefinitely(hubName), 5000);
             })
     }
 

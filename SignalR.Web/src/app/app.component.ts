@@ -17,9 +17,9 @@ export class AppComponent implements OnInit, OnDestroy {
         private readonly signalRManager: SignalRConnectionManager) {
 
         console.log(`subscribing to ${INotificationHub.hub}`);
-        this.signalRManager.connect(INotificationHub.hub).subscribe(() => {
-            this.subscribeToSendMessage();
-            this.subscribeToNotify();
+        this.signalRManager.connect(INotificationHub.hub).subscribe((hub: INotificationHub) => {
+            this.subscribeToSendMessage(hub);
+            this.subscribeToNotify(hub);
         });
     }
 
@@ -27,13 +27,13 @@ export class AppComponent implements OnInit, OnDestroy {
     }
 
     public ngOnDestroy(): void {
-        // if (this.signalrService.notificationHub) {            
-        //     this.signalrService.notificationHub.connection.stop(); 
-        // }
+        this.signalrService.notificationHub$.subscribe(hub => {
+            hub.connection.stop();
+        })
     }
 
-    private subscribeToNotify() {
-        this.signalrService.notificationHub.registerNotify()
+    private subscribeToNotify(hub: INotificationHub) {
+        hub.registerNotify()
             .subscribe({
                 next: (message: string) => { this.log(`${message}`); },
                 error: (error) => { this.log(`Notify failed`); },
@@ -41,8 +41,8 @@ export class AppComponent implements OnInit, OnDestroy {
             });
     }
 
-    private subscribeToSendMessage(): void {
-        this.signalrService.notificationHub.registerSendMessage()
+    private subscribeToSendMessage(hub: INotificationHub): void {
+        hub.registerSendMessage()
             .subscribe({
                 next: (message: NotificationHubMessage) => { this.log(`[${message.userName || 'Anonymous'}] ${message.message}`); },
                 error: (error) => { this.log(`SendMessage failed`); },
@@ -54,7 +54,9 @@ export class AppComponent implements OnInit, OnDestroy {
         this.logger.log(message);
     }
 
-    public async sendMessage(): Promise<void> {
-        await this.signalrService.notificationHub.sendMessage('Sent from the button!');
+    public sendMessage(): void {
+        this.signalrService.notificationHub$.subscribe((hub: INotificationHub) => {
+            hub.sendMessage('Sent from the button!')
+        });
     }
 }

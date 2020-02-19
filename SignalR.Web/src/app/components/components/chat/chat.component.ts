@@ -27,7 +27,7 @@ export class ChatComponent implements OnInit {
     constructor(private readonly signalR: SignalRService, private readonly nameService: NameService) { }
 
     ngOnInit() {
-        this.signalR.notificationHub.subscribe((hub: INotificationHub) => {
+        this.signalR.notificationHub$.subscribe((hub: INotificationHub) => {
             this.notificationHub = hub; 
             this.subscribeToHubMethods();
         });
