@@ -14,8 +14,9 @@
         class="message"
         [class.mine]="message.mine"
         [class.info]="message.info">
-        <b *ngIf="message.user"><span>{{message.user}} </span></b>
-        <i><b *ngIf="message.groups && message.groups.length > 0"><span>({{message.groups.join(', ')}})</span></b></i>
+        <b *ngIf="message.user"><span>{{message.user}}</span></b>
+        <i><b *ngIf="message.groups && message.groups.length > 0"><span> ({{message.groups.join(', ')}})</span></b></i>
+        <b>: </b>
         <span>{{message.message}}</span></div>
 </div>
 
