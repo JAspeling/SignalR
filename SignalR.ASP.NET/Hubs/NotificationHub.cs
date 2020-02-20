@@ -10,19 +10,30 @@ namespace SignalR.ASP.NET.Hubs
     public class NotificationHub : Hub<INotificationHub>
     {
         // The SendNotification method can be called from a client.
-        public async Task SendMessage(string message)
+        public void SendMessage(string message)
         {
-            await Clients.AllExcept(Context.ConnectionId).SendMessage(new HubMessage() {UserName = Context.QueryString["name"], Message = message});
+            Clients.AllExcept(Context.ConnectionId).SendMessage(new HubMessage()
+                {UserName = Context.QueryString["name"], Message = message});
         }
 
-        public Task JoinGroup(string groupName)
+        public void SendGroupMessage(string group, string message)
         {
-            return Groups.Add(Context.ConnectionId, groupName);
+            Clients.OthersInGroup(group).SendMessage(new HubMessage
+                {UserName = Context.QueryString["name"], Message = message});
         }
 
-        public Task LeaveGroup(string groupName)
+        public void JoinGroup(string groupName)
         {
-            return Groups.Remove(Context.ConnectionId, groupName);
+            Clients.OthersInGroup(groupName).Notify($"{Context.QueryString["name"]} joined '{groupName}'");
+
+            Groups.Add(Context.ConnectionId, groupName);
+        }
+
+        public void LeaveGroup(string groupName)
+        {
+            Clients.OthersInGroup(groupName).Notify($"{Context.QueryString["name"]} left '{groupName}'");
+
+            Groups.Remove(Context.ConnectionId, groupName);
         }
 
         // Lifetime events

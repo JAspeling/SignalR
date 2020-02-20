@@ -12,4 +12,6 @@ export abstract class INotificationHub implements IHub {
     abstract registerNotify(): Observable<string>;
 
     abstract sendMessage(message: string): Promise<void>;
+    abstract joinGroup(group: string): Promise<void>;
+    abstract leaveGroup(group: string): Promise<void>;
 }

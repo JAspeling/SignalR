@@ -8,9 +8,18 @@ export class HubBase {
     serverMethods = {
         NotificationHub: {
             SendMessage: 'SendMessage',
-            Notify: 'Notify',
+            SendGroupMessage: 'SendGroupMessage',
+            JoinGroup: 'JoinGroup',
+            LeaveGroup: 'LeaveGroup'
         }
     };
+
+    clientMethods = {
+        NotificationHub: {
+            Notify: 'Notify',
+            SendMessage: 'SendMessage',
+        }
+    }
 
     constructor(connection: ISignalRConnection) {
         this.connection = connection;

@@ -76,5 +76,13 @@ export class ChatComponent implements OnInit {
 
     public toggleGroup(group: { name: string, joined: boolean }): void {
         group.joined = !group.joined;
+
+        if (group.joined) {
+            this.notificationHub.joinGroup(group.name);
+            this.messages.push(new Message({ message: `Joined ${group.name}`, info: true, user: 'You' }));
+        } else {
+            this.notificationHub.leaveGroup(group.name);
+            this.messages.push(new Message({ message: `Left ${group.name}`, info: true, user: 'You' }));
+        }
     }
 }

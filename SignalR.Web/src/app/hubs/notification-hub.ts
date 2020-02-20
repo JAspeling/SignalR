@@ -20,11 +20,11 @@ export class NotificationHub extends HubBase implements INotificationHub {
 
     // Listen to when the server broadcasts 'SendNotification' on the NotificationHub
     public registerSendMessage(): Observable<NotificationHubMessage> {
-        return this.register<NotificationHubMessage>(this.serverMethods.NotificationHub.SendMessage);
+        return this.register<NotificationHubMessage>(this.clientMethods.NotificationHub.SendMessage);
     }
 
     public registerNotify(): Observable<string> {
-        return this.register<string>(this.serverMethods.NotificationHub.Notify);
+        return this.register<string>(this.clientMethods.NotificationHub.Notify);
     }
 
     private register<T>(method: string): Observable<T> {
@@ -38,12 +38,24 @@ export class NotificationHub extends HubBase implements INotificationHub {
         return listener$;
     }
 
-    // Send server messages
+    // Execute Server methods
     public sendMessage(message: string): Promise<void> {
         return this.connection.invoke(this.serverMethods.NotificationHub.SendMessage, message);
     }
 
-    public log(message: string): void {
+    public sendGroupMessage(group: string, message: string) {
+        return this.connection.invoke(this.serverMethods.NotificationHub.SendGroupMessage, group, message);
+    }
+
+    public joinGroup(group: string): Promise<void> {
+        return this.connection.invoke(this.serverMethods.NotificationHub.JoinGroup, group);
+    }
+    
+    public leaveGroup(group: string): Promise<void> {
+        return this.connection.invoke(this.serverMethods.NotificationHub.LeaveGroup, group);
+    }
+
+    private log(message: string): void {
         this.feedbackService.log(`[${INotificationHub.hub}] ${message}`);
     }
 }
