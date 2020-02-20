@@ -2,7 +2,7 @@ import { BroadcastEventListener, ISignalRConnection } from 'ng2-signalr';
 import { Observable, Subject } from 'rxjs';
 
 import { INotificationHub } from '../interfaces/notification-hub.interface';
-import { NotificationHubMessage } from '../models/notification-hub-message';
+import { HubMessage } from '../models/notification-hub-message';
 import { AppInjector } from '../services/app-injector';
 import { LoggingService } from '../services/feedback-service';
 import { HubBase } from './hub-base';
@@ -20,8 +20,8 @@ export class NotificationHub extends HubBase implements INotificationHub {
     feedbackService: LoggingService;
 
     // Listen to when the server broadcasts 'SendNotification' on the NotificationHub
-    public registerSendMessage(): Observable<NotificationHubMessage> {
-        return this.register<NotificationHubMessage>(this.clientMethods.NotificationHub.SendMessage);
+    public registerSendMessage(): Observable<HubMessage> {
+        return this.register<HubMessage>(this.clientMethods.NotificationHub.SendMessage);
     }
 
     public registerNotify(): Observable<HubNotification> {

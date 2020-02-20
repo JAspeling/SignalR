@@ -10,11 +10,12 @@
 
     <div class="message info"
         *ngIf="currentUser"><span>-- Connected as <b>{{currentUser}} --</b></span></div>
-    <div *ngFor="let message of messages"
+    <div *ngFor="let message of messages; trackBy: trackByFn"
         class="message"
         [class.mine]="message.mine"
         [class.info]="message.info">
-        <b *ngIf="message.user"><span>{{message.user}}: </span></b>
+        <b *ngIf="message.user"><span>{{message.user}} </span></b>
+        <i><b *ngIf="message.groups && message.groups.length > 0"><span>({{message.groups.join(', ')}})</span></b></i>
         <span>{{message.message}}</span></div>
 </div>
 

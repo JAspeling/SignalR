@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Messages, Message } from '../../../models/message';
 import { isNullOrUndefined } from 'util';
 import { SignalRService } from '../../../services/signalr-service';
-import { NotificationHubMessage } from '../../../models/notification-hub-message';
+import { HubMessage } from '../../../models/notification-hub-message';
 import { NameService } from '../../../services/name-service';
 import { INotificationHub } from '../../../interfaces/notification-hub.interface';
 import { SignalRConnectionManager } from '../../../services/signalr-connection-manager-service';
@@ -59,8 +59,11 @@ export class ChatComponent implements OnInit {
     private subscribeToHubMethods() {
         this.currentUser = this.nameService.name;
 
-        this.notificationHub.registerSendMessage().subscribe((message: NotificationHubMessage) => {
-            this.messages.push(new Message({ user: message.userName, message: message.message }));
+        this.notificationHub.registerSendMessage().subscribe((message: HubMessage) => {
+            this.messages.push(new Message({
+                groups: message.groups ? message.groups.filter(g => this.joinedGroups.map(g => g.name).indexOf(g) !== -1) : [],
+                user: message.userName, message: message.message
+            }));
         });
 
         this.notificationHub.registerNotify().subscribe((notification: HubNotification) => {
@@ -73,23 +76,31 @@ export class ChatComponent implements OnInit {
 
             if (this.containsGroups()) {
                 var groups = this.joinedGroups.filter(g => this.message.contains(g.name)).map(g => g.name);
+                this.removeGroups()
                 this.notificationHub.sendGroupsMessage(groups, this.message);
             } else {
                 this.notificationHub.sendMessage(this.message);
             }
-            
+
             this.messages.push(new Message({ message: this.message, user: 'You', mine: true }));
             this.message = '';
 
             ($('#input')[0] as HTMLInputElement).focus();
         }
     }
+
+    private removeGroups() {
+        this.joinedGroups.forEach(g => {
+            this.message = this.message.replaceAll(`@${g.name}`, '');
+        })
+    }
+
     private containsGroups(): boolean {
         return this.joinedGroups.length > 0 && this.message.containsOneOf(this.joinedGroups.map(g => `@${g.name}`));
     }
 
     public toggleGroup(group: { name: string, joined: boolean }): void {
-        group.joined = !group.joined;
+        group.joined = !group.joined;        
 
         if (group.joined) {
             this.notificationHub.joinGroup(group.name);
@@ -99,4 +110,9 @@ export class ChatComponent implements OnInit {
             this.messages.push(new Message({ message: `Left ${group.name}`, info: true, user: 'You' }));
         }
     }
+
+    public trackByFn(index: number): number {
+        return index;
+    }
+
 }

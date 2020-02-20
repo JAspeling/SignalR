@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 
 import { INotificationHub } from './interfaces/notification-hub.interface';
-import { NotificationHubMessage } from './models/notification-hub-message';
+import { HubMessage } from './models/notification-hub-message';
 import { LoggingService } from './services/feedback-service';
 import { SignalRConnectionManager } from './services/signalr-connection-manager-service';
 import { SignalRService } from './services/signalr-service';
 import { NameService } from './services/name-service';
 import { Subscription } from 'rxjs';
+import { HubNotification } from './models/hub-notification';
 
 @Component({
     selector: 'app-root',
@@ -56,7 +57,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private subscribeToNotify(hub: INotificationHub) {
         this.hubSubscriptions.push(hub.registerNotify()
             .subscribe({
-                next: (message: string) => { this.logger.log(`${message}`); },
+                next: (notification: HubNotification) => { this.logger.log(`${notification.originatingUser} - ${notification.message}`); },
                 error: (error) => { this.logger.log(`Notify failed`); },
                 complete: () => { },
             }));
@@ -65,7 +66,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private subscribeToSendMessage(hub: INotificationHub): void {
         this.hubSubscriptions.push(hub.registerSendMessage()
             .subscribe({
-                next: (message: NotificationHubMessage) => { this.logger.log(`[${message.userName || 'Anonymous'}] ${message.message}`); },
+                next: (message: HubMessage) => { this.logger.log(`[${message.userName || 'Anonymous'}] ${message.message}`); },
                 error: (error) => { this.logger.log(`SendMessage failed`); },
                 complete: () => { },
             }));

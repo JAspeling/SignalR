@@ -5,6 +5,7 @@ export class Message {
         Object.assign(this, init);
     }
 
+    groups: string[];
     message: string;
     user: string;
     mine: boolean;

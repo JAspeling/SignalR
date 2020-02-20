@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 import { HubEvent } from '../../../models/event';
 import { SignalRService } from '../../../services/signalr-service';
-import { NotificationHubMessage } from '../../../models/notification-hub-message';
+import { HubMessage } from '../../../models/notification-hub-message';
 import { Subscription, Subject } from 'rxjs';
 import { LoggingService } from '../../../services/feedback-service';
 
@@ -26,7 +26,7 @@ export class FeedbackComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        const out = document.getElementById("feedback")
+        // const out = document.getElementById("feedback")
 
         // setInterval(function () {
         //     // allow 1px inaccuracy by adding 1
