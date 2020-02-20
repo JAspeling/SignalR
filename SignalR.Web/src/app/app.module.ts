@@ -1,3 +1,5 @@
+import './prototypes/string';
+
 import { Injector, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 

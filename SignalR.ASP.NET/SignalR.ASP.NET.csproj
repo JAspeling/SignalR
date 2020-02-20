@@ -143,6 +143,7 @@
     <Compile Include="App_Start\NinjectResolver.cs" />
     <Compile Include="Controllers\SignalRController.cs" />
     <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Hubs\Models\NotificationHub\NotificationMessage.cs" />
     <Compile Include="Hubs\TestHub.cs" />
     <Compile Include="Modules\ErrorHandlingPipelineModule.cs" />
     <Compile Include="Hubs\Interfaces\INotificationHub.cs" />

@@ -6,6 +6,7 @@ import { NotificationHubMessage } from '../models/notification-hub-message';
 import { AppInjector } from '../services/app-injector';
 import { LoggingService } from '../services/feedback-service';
 import { HubBase } from './hub-base';
+import { HubNotification } from '../models/hub-notification';
 
 export class NotificationHub extends HubBase implements INotificationHub {
     public constructor(public connection: ISignalRConnection) {
@@ -23,8 +24,8 @@ export class NotificationHub extends HubBase implements INotificationHub {
         return this.register<NotificationHubMessage>(this.clientMethods.NotificationHub.SendMessage);
     }
 
-    public registerNotify(): Observable<string> {
-        return this.register<string>(this.clientMethods.NotificationHub.Notify);
+    public registerNotify(): Observable<HubNotification> {
+        return this.register<HubNotification>(this.clientMethods.NotificationHub.Notify);
     }
 
     private register<T>(method: string): Observable<T> {
@@ -45,6 +46,10 @@ export class NotificationHub extends HubBase implements INotificationHub {
 
     public sendGroupMessage(group: string, message: string) {
         return this.connection.invoke(this.serverMethods.NotificationHub.SendGroupMessage, group, message);
+    }
+
+    public sendGroupsMessage(groups: string[], message: string) {
+        return this.connection.invoke(this.serverMethods.NotificationHub.SendGroupsMessage, groups, message);
     }
 
     public joinGroup(group: string): Promise<void> {

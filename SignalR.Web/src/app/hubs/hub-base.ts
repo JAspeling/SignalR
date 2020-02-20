@@ -9,6 +9,7 @@ export class HubBase {
         NotificationHub: {
             SendMessage: 'SendMessage',
             SendGroupMessage: 'SendGroupMessage',
+            SendGroupsMessage: 'SendGroupsMessage',
             JoinGroup: 'JoinGroup',
             LeaveGroup: 'LeaveGroup'
         }

@@ -22,8 +22,9 @@
     <input class="form-control"
         id="input"
         type="text"
+        [mention]="joinedGroups"
+        [mentionConfig]="{triggerChar:'@',maxItems:10,labelKey:'name'}"
         placeholder="Enter message here"
-        (keyup.enter)="sendMessage()"
         [(ngModel)]="message">
     <button type="button"
         class="btn btn-primary"

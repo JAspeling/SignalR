@@ -7,6 +7,7 @@ import { NameService } from '../../../services/name-service';
 import { INotificationHub } from '../../../interfaces/notification-hub.interface';
 import { SignalRConnectionManager } from '../../../services/signalr-connection-manager-service';
 import { NotificationHub } from '../../../hubs/notification-hub';
+import { HubNotification } from '../../../models/hub-notification';
 
 @Component({
     selector: 'app-chat',
@@ -24,6 +25,10 @@ export class ChatComponent implements OnInit {
         { name: 'Working Capital', joined: false },
         { name: 'Trade', joined: false },
     ]
+
+    get joinedGroups(): { name: string, joined: boolean }[] {
+        return this.groups.filter(g => g.joined);
+    }
     notificationHub: INotificationHub;
 
     connected: boolean = false;
@@ -58,20 +63,29 @@ export class ChatComponent implements OnInit {
             this.messages.push(new Message({ user: message.userName, message: message.message }));
         });
 
-        this.notificationHub.registerNotify().subscribe((message: string) => {
-            this.messages.push(new Message({ message: message, info: true }));
+        this.notificationHub.registerNotify().subscribe((notification: HubNotification) => {
+            this.messages.push(new Message({ user: notification.originatingUser, message: notification.message, info: true }));
         });
     }
 
     public sendMessage(): void {
         if (this.connected && !isNullOrUndefined(this.message) && this.message !== '') {
-            this.notificationHub.sendMessage(this.message);
-            this.messages.push(new Message({ message: this.message, user: 'You', mine: true }));
 
+            if (this.containsGroups()) {
+                var groups = this.joinedGroups.filter(g => this.message.contains(g.name)).map(g => g.name);
+                this.notificationHub.sendGroupsMessage(groups, this.message);
+            } else {
+                this.notificationHub.sendMessage(this.message);
+            }
+            
+            this.messages.push(new Message({ message: this.message, user: 'You', mine: true }));
             this.message = '';
 
             ($('#input')[0] as HTMLInputElement).focus();
         }
+    }
+    private containsGroups(): boolean {
+        return this.joinedGroups.length > 0 && this.message.containsOneOf(this.joinedGroups.map(g => `@${g.name}`));
     }
 
     public toggleGroup(group: { name: string, joined: boolean }): void {
