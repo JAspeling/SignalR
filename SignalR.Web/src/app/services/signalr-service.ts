@@ -1,49 +1,50 @@
 import { Injectable } from '@angular/core';
 import { ISignalRConnection, SignalR } from 'ng2-signalr';
-import { Subject, BehaviorSubject, Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
+import { share } from 'rxjs/operators';
 
 import { environment } from '../../environments/environment';
+import { IHub } from '../hubs/hub';
 import { NotificationHub } from '../hubs/notification-hub';
 import { INotificationHub } from '../interfaces/notification-hub.interface';
 import { LoggingService } from './feedback-service';
 import { NameService } from './name-service';
-import { share } from 'rxjs/operators';
 
 @Injectable()
 export class SignalRService {
-    public notificationHubReady$: Subject<boolean> = new Subject<boolean>();
-    public notificationHub: Observable<INotificationHub> ;
-    public _notificationHub: Subject<INotificationHub> ;
+    private notificationHubSubject: Subject<INotificationHub>;
+    public notificationHub$: Observable<INotificationHub>;
 
     constructor(private readonly signalR: SignalR,
         private readonly feedbackService: LoggingService,
         private readonly nameService: NameService
     ) {
-        this._notificationHub = new Subject<INotificationHub>();
-        this.notificationHub = this._notificationHub.pipe(share())
+        this.notificationHubSubject = new Subject<INotificationHub>();
+        this.notificationHub$ = this.notificationHubSubject.pipe(share())
     }
 
-    connect(hub: string, options?: any): Promise<ISignalRConnection> {
-        return new Promise<ISignalRConnection>((resolve, reject) => {
-            this.signalR.connect({ hubName: hub, url: environment.signalrUrl, jsonp: true, qs: { name: this.nameService.name } })
+    connect(hub: string, options?: any): Promise<IHub> {
+        return new Promise<IHub>((resolve, reject) => {
+            this.signalR.connect({ hubName: hub, url: environment.signalrUrl, jsonp: true, qs: options })
                 .then((connection: ISignalRConnection) => {
                     this.feedbackService.log(`Connection to ${hub} success`);
-                    this.instantiateHub(hub, connection);
-                    resolve(connection);
+                    resolve(this.instantiateHub(hub, connection));
                 })
                 .catch((error) => {
                     this.feedbackService.log(`Failed to connect to SignalR hub ${hub}`);
                     reject(error);
                 });
-
         });
     }
 
-    private instantiateHub(hub: string, connection: ISignalRConnection): void {
-        switch (hub) {
+    private instantiateHub(hubName: string, connection: ISignalRConnection): IHub {
+        var hub: IHub;
+        switch (hubName) {
             case INotificationHub.hub:
-                this._notificationHub.next(new NotificationHub(connection));
+                hub = new NotificationHub(connection);
+                this.notificationHubSubject.next(hub as INotificationHub);
                 break;
         }
+        return hub;
     }
 }

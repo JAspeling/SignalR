@@ -3,11 +3,11 @@
         <button class="btn"
             [class.btn-outline-primary]="!group.joined"
             [class.btn-primary]="group.joined"
-            (click)="toggleGroup(group)"
-            >{{group.name}}</button>
+            (click)="toggleGroup(group)">{{group.name}}</button>
     </ng-container>
 </div>
 <div class="message-container">
+
     <div class="message info"
         *ngIf="currentUser"><span>-- Connected as <b>{{currentUser}} --</b></span></div>
     <div *ngFor="let message of messages"
