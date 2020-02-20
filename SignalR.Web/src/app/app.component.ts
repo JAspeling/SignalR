@@ -6,6 +6,7 @@ import { LoggingService } from './services/feedback-service';
 import { SignalRConnectionManager } from './services/signalr-connection-manager-service';
 import { SignalRService } from './services/signalr-service';
 import { NameService } from './services/name-service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-root',
@@ -18,12 +19,12 @@ export class AppComponent implements OnInit, OnDestroy {
         private readonly signalRManager: SignalRConnectionManager,
         private readonly nameService: NameService) {
 
-        console.log(`subscribing to ${INotificationHub.hub}`);
-        this.signalRManager.connect(INotificationHub.hub, { name: this.nameService.name}).subscribe((hub: INotificationHub) => {
-            this.subscribeToSendMessage(hub);
-            this.subscribeToNotify(hub);
-        });
+        this.handleHubConnection();
+        this.handleHubConnectionLost();
     }
+
+    public isConnected: boolean = false;
+    private hubSubscriptions: Subscription[] = [];
 
     public ngOnInit(): void {
     }
@@ -34,26 +35,40 @@ export class AppComponent implements OnInit, OnDestroy {
         })
     }
 
-    private subscribeToNotify(hub: INotificationHub) {
-        hub.registerNotify()
-            .subscribe({
-                next: (message: string) => { this.log(`${message}`); },
-                error: (error) => { this.log(`Notify failed`); },
-                complete: () => { },
+    private handleHubConnection() {
+        console.log(`subscribing to ${INotificationHub.hub}`);
+        this.signalRManager.connect(INotificationHub.hub, { name: this.nameService.name }).subscribe((hub: INotificationHub) => {
+            this.isConnected = true;
+            this.subscribeToSendMessage(hub);
+            this.subscribeToNotify(hub);
+        });
+    }
+
+    private handleHubConnectionLost() {
+        this.signalRManager.connectionLost$.subscribe(() => {
+            this.isConnected = false;
+            this.hubSubscriptions.forEach(sub => {
+                sub.unsubscribe();
             });
+        });
+    }
+
+    private subscribeToNotify(hub: INotificationHub) {
+        this.hubSubscriptions.push(hub.registerNotify()
+            .subscribe({
+                next: (message: string) => { this.logger.log(`${message}`); },
+                error: (error) => { this.logger.log(`Notify failed`); },
+                complete: () => { },
+            }));
     }
 
     private subscribeToSendMessage(hub: INotificationHub): void {
-        hub.registerSendMessage()
+        this.hubSubscriptions.push(hub.registerSendMessage()
             .subscribe({
-                next: (message: NotificationHubMessage) => { this.log(`[${message.userName || 'Anonymous'}] ${message.message}`); },
-                error: (error) => { this.log(`SendMessage failed`); },
+                next: (message: NotificationHubMessage) => { this.logger.log(`[${message.userName || 'Anonymous'}] ${message.message}`); },
+                error: (error) => { this.logger.log(`SendMessage failed`); },
                 complete: () => { },
-            });
-    }
-
-    public log(message: string) {
-        this.logger.log(message);
+            }));
     }
 
     public sendMessage(): void {

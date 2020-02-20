@@ -1,9 +1,16 @@
-.app {
+.app {    
     display: flex;
     flex-direction: column;
     justify-content: space-around;
 
     height: 100vh;
+
+    transition: border-top 0.3s;
+    border-top: 0px solid;
+
+    &.disconnected {
+        border-top: 5px solid red; 
+    }
 
     .component {
         &-fill {

@@ -8,7 +8,6 @@ import { IHub } from '../hubs/hub';
 import { NotificationHub } from '../hubs/notification-hub';
 import { INotificationHub } from '../interfaces/notification-hub.interface';
 import { LoggingService } from './feedback-service';
-import { NameService } from './name-service';
 
 @Injectable()
 export class SignalRService {
@@ -16,8 +15,7 @@ export class SignalRService {
     public notificationHub$: Observable<INotificationHub>;
 
     constructor(private readonly signalR: SignalR,
-        private readonly feedbackService: LoggingService,
-        private readonly nameService: NameService
+        private readonly feedbackService: LoggingService
     ) {
         this.notificationHubSubject = new Subject<INotificationHub>();
         this.notificationHub$ = this.notificationHubSubject.pipe(share())
