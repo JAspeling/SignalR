@@ -1,0 +1,7 @@
+{
+  "name": "signalr.ionic",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
