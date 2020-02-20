@@ -20,11 +20,13 @@
 
 <div class="commands">
     <input class="form-control"
+        id="input"
         type="text"
         placeholder="Enter message here"
         (keyup.enter)="sendMessage()"
         [(ngModel)]="message">
     <button type="button"
         class="btn btn-primary"
+        [class.disabled]="!connected"
         (click)="sendMessage()">Send</button>
 </div>

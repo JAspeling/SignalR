@@ -62,14 +62,14 @@ export class SignalRConnectionManager {
 
     private checkForDisconnects(status: ConnectionStatus, hub: IHub, hubName: string, options?: any) {
         switch (status.value) {
-            case 1:
+            case 1: // Connected
                 this.connectionEstablished$.next(hub);
                 break;
-            case 2:
-                this.connectionLost$.next();
+            case 2: // Reconnecting
+                this.connectionLost$.next(hub);
                 break;
-            case 4:
-                this.connectionLost$.next();
+            case 4: // Disconnected
+                this.connectionLost$.next(hub);
                 this.connectAndRetryOnFail(hub, hubName, options);
                 break;
         }

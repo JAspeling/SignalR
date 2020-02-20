@@ -5,6 +5,8 @@ import { SignalRService } from '../../../services/signalr-service';
 import { NotificationHubMessage } from '../../../models/notification-hub-message';
 import { NameService } from '../../../services/name-service';
 import { INotificationHub } from '../../../interfaces/notification-hub.interface';
+import { SignalRConnectionManager } from '../../../services/signalr-connection-manager-service';
+import { NotificationHub } from '../../../hubs/notification-hub';
 
 @Component({
     selector: 'app-chat',
@@ -24,21 +26,29 @@ export class ChatComponent implements OnInit {
     ]
     notificationHub: INotificationHub;
 
-    constructor(private readonly signalR: SignalRService, private readonly nameService: NameService) { }
+    connected: boolean = false;
+
+    constructor(private readonly signalR: SignalRService,
+        private readonly connectionManager: SignalRConnectionManager,
+        private readonly nameService: NameService) { }
 
     ngOnInit() {
         this.signalR.notificationHub$.subscribe((hub: INotificationHub) => {
-            this.notificationHub = hub; 
+            this.notificationHub = hub;
             this.subscribeToHubMethods();
         });
-        
-        // if (isNullOrUndefined(this.signalR.notificationHub)) {
-        //     this.signalR.notificationHubReady$.subscribe(() => {
-        //         this.subscribeToHubMethods();
-        //     })
-        // } else {
-        //     this.subscribeToHubMethods();
-        // }
+
+        this.connectionManager.connectionLost$.subscribe(hub => {
+            if (hub instanceof NotificationHub) {
+                this.connected = false;
+            }
+        });
+
+        this.connectionManager.connectionEstablished$.subscribe(hub => {
+            if (hub instanceof NotificationHub) {
+                this.connected = true;
+            }
+        })
     }
 
     private subscribeToHubMethods() {
@@ -54,9 +64,13 @@ export class ChatComponent implements OnInit {
     }
 
     public sendMessage(): void {
-        if (!isNullOrUndefined(this.message)) {
+        if (this.connected && !isNullOrUndefined(this.message) && this.message !== '') {
             this.notificationHub.sendMessage(this.message);
             this.messages.push(new Message({ message: this.message, user: 'You', mine: true }));
+
+            this.message = '';
+
+            ($('#input')[0] as HTMLInputElement).focus();
         }
     }
 
