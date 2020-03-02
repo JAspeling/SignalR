@@ -4,19 +4,21 @@ using Microsoft.AspNet.SignalR;
 using SignalR.ASP.NET.Hubs;
 using System.Web.Http;
 using Newtonsoft.Json;
-using SignalR.ASP.NET.Hubs.Interfaces;
+using SignalR.ASP.NET.Hubs.Interfaces.Client;
 using SignalR.ASP.NET.Hubs.Models;
 
 namespace SignalR.ASP.NET.Controllers
 {
     public class SignalRController : ApiController
     {
-        private readonly ITestHub _test;
-        private readonly IHubContext<INotificationHub> _notificationHub;
+        private readonly IHubContext<IClientNotificationHub> notificationHub;
+        private readonly IHubContext<IClientGreeterHub> greeterHub;
 
-        public SignalRController(IHubContext<INotificationHub> notificationHub)
+        public SignalRController(IHubContext<IClientNotificationHub> notificationHub,
+            IHubContext<IClientGreeterHub> greeterHub)
         {
-            _notificationHub = notificationHub;
+            this.notificationHub = notificationHub;
+            this.greeterHub = greeterHub;
         }
 
         [HttpGet]
@@ -25,9 +27,19 @@ namespace SignalR.ASP.NET.Controllers
         {
             var method = MethodBase.GetCurrentMethod();
             var hubMessage = new HubMessage { Message = message, UserName = "Admin" };
-            _notificationHub.Clients.All.SendMessage(hubMessage);
+            notificationHub.Clients.All.SendMessage(hubMessage);
 
             return $">> [SIGNALR] ({method}) - {JsonConvert.SerializeObject(hubMessage)}";
+        }
+
+        [HttpGet]
+        [ActionName("Greet")]
+        public IHttpActionResult Greet(string user)
+        {
+
+            this.greeterHub.Clients.All.Greet(user);
+
+            return Ok($" >> [SIGNALR] Greeting sent out from {user}");
         }
     }
 }

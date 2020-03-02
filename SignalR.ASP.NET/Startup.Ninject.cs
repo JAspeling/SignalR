@@ -4,7 +4,7 @@ using Ninject.Web.Common;
 using Ninject.Web.WebApi.Filter;
 using SignalR.ASP.NET.App_Start;
 using SignalR.ASP.NET.Hubs;
-using SignalR.ASP.NET.Hubs.Interfaces;
+using SignalR.ASP.NET.Hubs.Interfaces.Client;
 using System;
 using System.Web;
 using System.Web.Http;
@@ -52,10 +52,11 @@ namespace SignalR.ASP.NET
                 new DefaultModelValidatorProviders(
                     GlobalConfiguration.Configuration.Services.GetModelValidatorProviders()));
 
-            kernel.Bind<IHubContext<INotificationHub>>().ToMethod(x =>
-                GlobalHost.ConnectionManager.GetHubContext<NotificationHub, INotificationHub>());
+            kernel.Bind<IHubContext<IClientNotificationHub>>().ToMethod(x =>
+                GlobalHost.ConnectionManager.GetHubContext<NotificationHub, IClientNotificationHub>());
 
-            kernel.Bind<ITestHub>().To<TestHub>();
+            kernel.Bind<IHubContext<IClientGreeterHub>>().ToMethod(x =>
+                GlobalHost.ConnectionManager.GetHubContext<GreeterHub, IClientGreeterHub>());
         }
     }
 }

@@ -8,13 +8,14 @@ import { INotificationHub } from '../../../interfaces/notification-hub.interface
 import { SignalRConnectionManager } from '../../../services/signalr-connection-manager-service';
 import { NotificationHub } from '../../../hubs/notification-hub';
 import { HubNotification } from '../../../models/hub-notification';
+import { HubComponent } from '../../../hubs/hub-component';
 
 @Component({
     selector: 'app-chat',
     templateUrl: './chat.component.html',
     styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent extends HubComponent {
     messages: Messages = [];
     message: string;
     currentUser: string;
@@ -35,40 +36,55 @@ export class ChatComponent implements OnInit {
 
     constructor(private readonly signalR: SignalRService,
         private readonly connectionManager: SignalRConnectionManager,
-        private readonly nameService: NameService) { }
+        private readonly nameService: NameService) {
+        super(connectionManager)
+    }
 
     ngOnInit() {
+        super.ngOnInit();
+        this.currentUser = this.nameService.name;
+    }
+
+    ngOnDestroy() {
+        super.ngOnDestroy();
+    }
+
+    public handleHubConnection() {
         this.signalR.notificationHub$.subscribe((hub: INotificationHub) => {
+            this.connected = true;
             this.notificationHub = hub;
             this.subscribeToHubMethods();
         });
+    }
 
+    public handleHubConnectionLost() {
         this.connectionManager.connectionLost$.subscribe(hub => {
             if (hub instanceof NotificationHub) {
                 this.connected = false;
             }
         });
-
-        this.connectionManager.connectionEstablished$.subscribe(hub => {
-            if (hub instanceof NotificationHub) {
-                this.connected = true;
-            }
-        })
     }
 
     private subscribeToHubMethods() {
-        this.currentUser = this.nameService.name;
+        this.subscribeToSendMessage();
+        this.subscribeToNofify();
+    }
 
-        this.notificationHub.registerSendMessage().subscribe((message: HubMessage) => {
+    private subscribeToNofify() {
+        this.hubSubscriptions.push(
+            this.notificationHub.registerNotify().subscribe((notification: HubNotification) => {
+                this.messages.push(new Message({ user: notification.originatingUser, message: notification.message, info: true }));
+            })
+        );
+    }
+
+    private subscribeToSendMessage() {
+        this.hubSubscriptions.push(this.notificationHub.registerSendMessage().subscribe((message: HubMessage) => {
             this.messages.push(new Message({
                 groups: message.groups ? message.groups.filter(g => this.joinedGroups.map(g => g.name).indexOf(g) !== -1) : [],
                 user: message.userName, message: message.message
             }));
-        });
-
-        this.notificationHub.registerNotify().subscribe((notification: HubNotification) => {
-            this.messages.push(new Message({ user: notification.originatingUser, message: notification.message, info: true }));
-        });
+        }));
     }
 
     public sendMessage(): void {
@@ -100,7 +116,7 @@ export class ChatComponent implements OnInit {
     }
 
     public toggleGroup(group: { name: string, joined: boolean }): void {
-        group.joined = !group.joined;        
+        group.joined = !group.joined;
 
         if (group.joined) {
             this.notificationHub.joinGroup(group.name);

@@ -8,59 +8,58 @@ import { SignalRService } from './services/signalr-service';
 import { NameService } from './services/name-service';
 import { Subscription } from 'rxjs';
 import { HubNotification } from './models/hub-notification';
+import { HubComponent } from './hubs/hub-component';
 
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class AppComponent extends HubComponent implements OnInit, OnDestroy {
     constructor(public readonly signalrService: SignalRService,
         private readonly logger: LoggingService,
-        private readonly signalRManager: SignalRConnectionManager,
-        private readonly nameService: NameService) {
-
-        this.handleHubConnection();
-        this.handleHubConnectionLost();
+        private readonly nameService: NameService,
+        readonly signalRManager: SignalRConnectionManager) {
+        super(signalRManager);
     }
 
     public isConnected: boolean = false;
-    private hubSubscriptions: Subscription[] = [];
 
     public ngOnInit(): void {
+        super.ngOnInit();
     }
 
     public ngOnDestroy(): void {
-        this.signalrService.notificationHub$.subscribe(hub => {
-            hub.connection.stop();
-        })
+        super.ngOnDestroy();
     }
 
-    private handleHubConnection() {
-        console.log(`subscribing to ${INotificationHub.hub}`);
-        this.signalRManager.connect(INotificationHub.hub, { name: this.nameService.name }).subscribe((hub: INotificationHub) => {
-            this.isConnected = true;
-            this.subscribeToSendMessage(hub);
-            this.subscribeToNotify(hub);
-        });
-    }
-
-    private handleHubConnectionLost() {
-        this.signalRManager.connectionLost$.subscribe(() => {
-            this.isConnected = false;
-            this.hubSubscriptions.forEach(sub => {
-                sub.unsubscribe();
+    handleHubConnection() {
+        this.signalRManager.connect(INotificationHub.hub, { name: this.nameService.name })
+            .subscribe({
+                next: (hub: INotificationHub) => {
+                    this.isConnected = true;
+                    this.subscribeToSendMessage(hub);
+                    this.subscribeToNotify(hub);
+                }
             });
+    }
+
+    handleHubConnectionLost() {
+        super.handleHubConnectionLost();
+        this.signalRManager.connectionLost$.subscribe((err) => {
+            this.isConnected = false;
         });
     }
 
     private subscribeToNotify(hub: INotificationHub) {
-        this.hubSubscriptions.push(hub.registerNotify()
-            .subscribe({
-                next: (notification: HubNotification) => { this.logger.log(`${notification.originatingUser} - ${notification.message}`); },
-                error: (error) => { this.logger.log(`Notify failed`); },
-                complete: () => { },
-            }));
+        this.hubSubscriptions.push(
+            hub.registerNotify()
+                .subscribe({
+                    next: (notification: HubNotification) => { this.logger.log(`${notification.originatingUser} - ${notification.message}`); },
+                    error: (error) => { this.logger.log(`Notify failed`); },
+                    complete: () => { },
+                })
+        );
     }
 
     private subscribeToSendMessage(hub: INotificationHub): void {
@@ -70,11 +69,5 @@ export class AppComponent implements OnInit, OnDestroy {
                 error: (error) => { this.logger.log(`SendMessage failed`); },
                 complete: () => { },
             }));
-    }
-
-    public sendMessage(): void {
-        this.signalrService.notificationHub$.subscribe((hub: INotificationHub) => {
-            hub.sendMessage('Sent from the button!')
-        });
     }
 }

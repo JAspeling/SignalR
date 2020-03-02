@@ -2,14 +2,15 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Microsoft.AspNet.SignalR;
-using SignalR.ASP.NET.Hubs.Interfaces;
+using SignalR.ASP.NET.Hubs.Interfaces.Client;
 using System.Threading.Tasks;
+using SignalR.ASP.NET.Hubs.Interfaces.Client.Server;
 using SignalR.ASP.NET.Hubs.Models;
 using SignalR.ASP.NET.Hubs.Models.NotificationHub;
 
 namespace SignalR.ASP.NET.Hubs
 {
-    public class NotificationHub : Hub<INotificationHub>
+    public class NotificationHub : Hub<IClientNotificationHub>, IServerNotificationHub
     {
         // The SendNotification method can be called from a client.
         public void SendMessage(string message)

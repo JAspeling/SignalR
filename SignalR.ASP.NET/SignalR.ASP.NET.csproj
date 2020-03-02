@@ -142,11 +142,13 @@
   <ItemGroup>
     <Compile Include="App_Start\NinjectResolver.cs" />
     <Compile Include="Controllers\SignalRController.cs" />
-    <Compile Include="Controllers\TestController.cs" />
+    <Compile Include="Hubs\GreeterHub.cs" />
+    <Compile Include="Hubs\Interfaces\Client\IClientGreeterHub.cs" />
+    <Compile Include="Hubs\Interfaces\Server\IServerGreeterHub.cs" />
+    <Compile Include="Hubs\Interfaces\Server\IServerNotificationHub.cs" />
     <Compile Include="Hubs\Models\NotificationHub\NotificationMessage.cs" />
-    <Compile Include="Hubs\TestHub.cs" />
     <Compile Include="Modules\ErrorHandlingPipelineModule.cs" />
-    <Compile Include="Hubs\Interfaces\INotificationHub.cs" />
+    <Compile Include="Hubs\Interfaces\Client\IClientNotificationHub.cs" />
     <Compile Include="Hubs\Models\NotificationHub\HubMessage.cs" />
     <Compile Include="Modules\LoggingPipelineModule.cs" />
     <Compile Include="Hubs\NotificationHub.cs" />

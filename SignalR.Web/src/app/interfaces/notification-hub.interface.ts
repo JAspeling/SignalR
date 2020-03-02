@@ -4,9 +4,14 @@ import { Observable } from 'rxjs';
 import { IHub } from '../hubs/hub';
 import { HubNotification } from '../models/hub-notification';
 import { HubMessage } from '../models/notification-hub-message';
+import { Dictionary } from './dictionary';
 
 export abstract class INotificationHub implements IHub {
     static hub: string = 'NotificationHub'; // Needs to match the hub name on the server.
+
+    serverMethods: any;
+    clientMethods: any;
+
     public connection: ISignalRConnection;
 
     abstract registerSendMessage(): Observable<HubMessage>;
