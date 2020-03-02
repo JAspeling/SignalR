@@ -9,6 +9,7 @@ import { NameService } from './services/name-service';
 import { Subscription } from 'rxjs';
 import { HubNotification } from './models/hub-notification';
 import { HubComponent } from './hubs/hub-component';
+import { IGreeterHub } from './interfaces/greeter-hub.interface';
 
 @Component({
     selector: 'app-root',
@@ -34,14 +35,8 @@ export class AppComponent extends HubComponent implements OnInit, OnDestroy {
     }
 
     handleHubConnection() {
-        this.signalRManager.connect(INotificationHub.hub, { name: this.nameService.name })
-            .subscribe({
-                next: (hub: INotificationHub) => {
-                    this.isConnected = true;
-                    this.subscribeToSendMessage(hub);
-                    this.subscribeToNotify(hub);
-                }
-            });
+        this.signalRManager.connect(INotificationHub.hub, { name: this.nameService.name }).subscribe();
+        this.signalRManager.connect(IGreeterHub.hub, { name: this.nameService.name }).subscribe();
     }
 
     handleHubConnectionLost() {
@@ -49,25 +44,5 @@ export class AppComponent extends HubComponent implements OnInit, OnDestroy {
         this.signalRManager.connectionLost$.subscribe((err) => {
             this.isConnected = false;
         });
-    }
-
-    private subscribeToNotify(hub: INotificationHub) {
-        this.hubSubscriptions.push(
-            hub.registerNotify()
-                .subscribe({
-                    next: (notification: HubNotification) => { this.logger.log(`${notification.originatingUser} - ${notification.message}`); },
-                    error: (error) => { this.logger.log(`Notify failed`); },
-                    complete: () => { },
-                })
-        );
-    }
-
-    private subscribeToSendMessage(hub: INotificationHub): void {
-        this.hubSubscriptions.push(hub.registerSendMessage()
-            .subscribe({
-                next: (message: HubMessage) => { this.logger.log(`[${message.userName || 'Anonymous'}] ${message.message}`); },
-                error: (error) => { this.logger.log(`SendMessage failed`); },
-                complete: () => { },
-            }));
     }
 }

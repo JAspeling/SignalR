@@ -6,7 +6,7 @@ namespace SignalR.ASP.NET.Hubs
 {
     public class GreeterHub: Hub<IClientGreeterHub>, IServerGreeterHub
     {
-        public void Greet()
+        public void SendGreeting()
         {
             Clients.Others.Greet(Context.QueryString["name"]);
         }

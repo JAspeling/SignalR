@@ -8,6 +8,6 @@ namespace SignalR.ASP.NET.Hubs.Interfaces.Server
 {
     public interface IServerGreeterHub
     {
-        void Greet();
+        void SendGreeting();
     }
 }

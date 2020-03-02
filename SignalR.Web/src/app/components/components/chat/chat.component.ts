@@ -9,6 +9,7 @@ import { SignalRConnectionManager } from '../../../services/signalr-connection-m
 import { NotificationHub } from '../../../hubs/notification-hub';
 import { HubNotification } from '../../../models/hub-notification';
 import { HubComponent } from '../../../hubs/hub-component';
+import { IGreeterHub } from '../../../interfaces/greeter-hub.interface';
 
 @Component({
     selector: 'app-chat',
@@ -31,6 +32,7 @@ export class ChatComponent extends HubComponent {
         return this.groups.filter(g => g.joined);
     }
     notificationHub: INotificationHub;
+    greeterHub: IGreeterHub;
 
     connected: boolean = false;
 
@@ -53,8 +55,13 @@ export class ChatComponent extends HubComponent {
         this.signalR.notificationHub$.subscribe((hub: INotificationHub) => {
             this.connected = true;
             this.notificationHub = hub;
-            this.subscribeToHubMethods();
+            this.subscribeToNotificationHubMethods();
         });
+
+        this.signalR.greeterHub$.subscribe((hub: IGreeterHub) => {
+            this.greeterHub = hub;
+            this.subscribeToGreeterHubMethods();
+        })
     }
 
     public handleHubConnectionLost() {
@@ -65,12 +72,22 @@ export class ChatComponent extends HubComponent {
         });
     }
 
-    private subscribeToHubMethods() {
+    private subscribeToNotificationHubMethods() {
         this.subscribeToSendMessage();
-        this.subscribeToNofify();
+        this.subscribeToNotify();
     }
 
-    private subscribeToNofify() {
+    private subscribeToGreeterHubMethods() {
+        this.subscribeToGreet();
+    }
+
+    private subscribeToGreet() {
+        this.greeterHub.registerGreet().subscribe((user: string) => {
+            this.messages.push(new Message({ user: user, message: 'Hello! I Just joined the chat.', info: true }));
+        });
+    }
+
+    private subscribeToNotify() {
         this.hubSubscriptions.push(
             this.notificationHub.registerNotify().subscribe((notification: HubNotification) => {
                 this.messages.push(new Message({ user: notification.originatingUser, message: notification.message, info: true }));

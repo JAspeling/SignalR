@@ -8,17 +8,23 @@ import { IHub } from '../hubs/hub';
 import { NotificationHub } from '../hubs/notification-hub';
 import { INotificationHub } from '../interfaces/notification-hub.interface';
 import { LoggingService } from './feedback-service';
+import { IGreeterHub } from '../interfaces/greeter-hub.interface';
+import { GreeterHub } from '../hubs/greeter-hub';
 
 @Injectable()
 export class SignalRService {
-    private notificationHubSubject: Subject<INotificationHub>;
+    private notificationHubSubject: Subject<INotificationHub> = new Subject<INotificationHub>();
     public notificationHub$: Observable<INotificationHub>;
+
+    private greeterHubSubject: Subject<IGreeterHub> = new Subject<IGreeterHub>();
+    public greeterHub$: Observable<IGreeterHub>;
+
 
     constructor(private readonly signalR: SignalR,
         private readonly feedbackService: LoggingService
     ) {
-        this.notificationHubSubject = new Subject<INotificationHub>();
-        this.notificationHub$ = this.notificationHubSubject.pipe(share())
+        this.notificationHub$ = this.notificationHubSubject.pipe(share());
+        this.greeterHub$ = this.greeterHubSubject.pipe(share());
     }
 
     connect(hub: string, options?: any): Promise<IHub> {
@@ -41,6 +47,10 @@ export class SignalRService {
             case INotificationHub.hub:
                 hub = new NotificationHub(connection);
                 this.notificationHubSubject.next(hub as INotificationHub);
+                break;
+            case IGreeterHub.hub:
+                hub = new GreeterHub(connection);
+                this.greeterHubSubject.next(hub as IGreeterHub);
                 break;
         }
         return hub;

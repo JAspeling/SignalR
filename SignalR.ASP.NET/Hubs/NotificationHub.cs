@@ -66,7 +66,9 @@ namespace SignalR.ASP.NET.Hubs
             // the connection is established; for example, in a JavaScript client,
             // the start().done callback is executed.
 
-            Clients.All.Notify(new NotificationMessage(Context.QueryString["name"], "Connected"));
+            var greeterContext = GlobalHost.ConnectionManager.GetHubContext<GreeterHub, IClientGreeterHub>();
+            greeterContext.Clients.AllExcept(Context.ConnectionId).Greet($"{Context.QueryString["name"]}");
+            // Clients.All.Notify(new NotificationMessage(Context.QueryString["name"], "Connected"));
             return base.OnConnected();
         }
 
