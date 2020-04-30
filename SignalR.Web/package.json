@@ -22,7 +22,7 @@
     "@types/signalr": "^2.2.36",
     "angular-mentions": "^1.1.3",
     "bootstrap": "^4.4.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "ng2-signalr": "^8.0.2",
     "rxjs": "~6.4.0",
     "signalr": "^2.4.1",
